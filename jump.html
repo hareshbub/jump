@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>தமிழ் கதைகள் மன்றம் | Tamil Stories Forum</title>
+    <style>
+        /* Basic Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f4f4f9;
+            color: #333;
+            /* Added padding at the bottom so they can actually swipe */
+            padding-bottom: 50vh;
+        }
+
+        /* Forum Header */
+        header {
+            background-color: #0056b3;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        /* Forum Content */
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 0 15px;
+        }
+
+        .post {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .post-author {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .post-title {
+            font-size: 1.3rem;
+            color: #0056b3;
+            margin-bottom: 10px;
+        }
+
+        .post-content {
+            font-size: 1.05rem;
+            line-height: 1.6;
+        }
+
+        /* Jumpscare Container */
+        #jumpscare-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: black;
+            z-index: 9999;
+            display: none; /* Hidden by default */
+            justify-content: center;
+            align-items: center;
+        }
+
+        #jumpscare-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Ensures the image fills the screen on mobile */
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Normal Forum Content -->
+    <header>
+        தமிழ் கதைகள் மற்றும் விவாதங்கள்
+    </header>
+
+    <div class="container">
+        <div class="post">
+            <div class="post-author">பதிவிட்டவர்: முரளி (Murali) | 2 மணி நேரங்களுக்கு முன்</div>
+            <div class="post-title">பழைய பங்களா ரகசியம்... (The Old Bungalow Secret)</div>
+            <div class="post-content">
+                இரவு 12 மணி. நான் தனியாக நடந்து சென்று கொண்டிருந்தேன். அந்த பழைய வீட்டில் யாருமே இல்லை என்று எனக்கு தெரியும், ஆனால் திடீரென்று ஒரு சத்தம்... உள்ளே சென்று பார்த்தால் அங்கே...
+                <br><br>
+                (கீழே படிக்கவும் / Swipe down to read more...)
+            </div>
+        </div>
+
+        <div class="post">
+            <div class="post-author">பதிவிட்டவர்: கார்த்திக் (Karthik) | 5 மணி நேரங்களுக்கு முன்</div>
+            <div class="post-content">
+                நான் நேற்றிரவு பைக்கில் வரும்போது, நெடுஞ்சாலையில் ஒரு பெண்ணை பார்த்தேன். அவள் லிப்ட் கேட்டாள். நான் வண்டியை நிறுத்தினேன், ஆனால் அவள் முகம்...
+            </div>
+        </div>
+
+        <div class="post">
+            <div class="post-author">பதிவிட்டவர்: அரவிந்த் (Aravind) | 1 நாள் முன்</div>
+            <div class="post-title">என் அறையில் ஏதோ இருக்கிறது</div>
+            <div class="post-content">
+                இரவில் தூங்கும்போது என் கட்டிலுக்கு அடியில் யாரோ மூச்சு விடுவது போல சத்தம் கேட்கிறது. லைட்டைப் போட்டால் யாருமில்லை. எனக்கு மிகவும் பயமாக இருக்கிறது நண்பர்களே.
+            </div>
+        </div>
+
+        <div class="post">
+            <div class="post-author">பதிவிட்டவர்: சிவா (Siva) | 2 நாட்கள் முன்</div>
+            <div class="post-title">காணாமல் போனவர்கள்</div>
+            <div class="post-content">
+                எங்கள் ஊரில் உள்ள அந்த பழைய மரத்தடியில் இரவு நேரத்தில் தனியாக சென்றவர்கள் யாரும் திரும்பி வந்ததில்லை. நேற்று என் நண்பன் அங்கே சென்றான்...
+            </div>
+        </div>
+    </div>
+
+    <!-- Jumpscare Hidden Elements -->
+    <div id="jumpscare-container">
+        <!-- Replace this URL with your scary image -->
+        <img src="YOUR_IMAGE_URL_HERE.jpg" alt="Scary Face">
+        <!-- Replace this URL with your loud jumpscare audio -->
+        <audio id="scare-sound" src="YOUR_AUDIO_URL_HERE.mp3" preload="auto"></audio>
+    </div>
+
+    <script>
+        let trapSet = false;
+
+        function triggerTrap() {
+            // Prevent the timer from starting multiple times if they swipe multiple times
+            if (trapSet) return;
+            trapSet = true;
+
+            // Pre-load the sound immediately upon their first swipe to satisfy mobile browser policies
+            let sound = document.getElementById('scare-sound');
+            sound.load();
+
+            // Start the 4-second timer
+            setTimeout(function() {
+                // Show the jumpscare image
+                document.getElementById('jumpscare-container').style.display = 'flex';
+
+                // Play the loud sound
+                sound.volume = 1.0;
+                sound.play().catch(e => console.log("Audio blocked by browser:", e));
+
+            }, 4000);
+        }
+
+        // Listen for multiple types of interaction to ensure it catches mobile swipes and desktop scrolls
+        window.addEventListener('touchstart', triggerTrap, { once: true });
+        window.addEventListener('touchmove', triggerTrap, { once: true });
+        window.addEventListener('scroll', triggerTrap, { once: true });
+        window.addEventListener('click', triggerTrap, { once: true });
+    </script>
+</body>
+</html>
