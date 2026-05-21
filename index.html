@@ -16,8 +16,7 @@
         body {
             background-color: #f4f4f9;
             color: #333;
-            /* Added padding at the bottom so they can actually swipe */
-            padding-bottom: 50vh;
+            padding-bottom: 50vh; /* Fake depth for scrolling */
         }
 
         /* Forum Header */
@@ -74,7 +73,7 @@
             height: 100vh;
             background-color: black;
             z-index: 9999;
-            display: none; /* Hidden by default */
+            display: none;
             justify-content: center;
             align-items: center;
         }
@@ -82,13 +81,12 @@
         #jumpscare-container img {
             width: 100%;
             height: 100%;
-            object-fit: cover; /* Ensures the image fills the screen on mobile */
+            object-fit: cover; 
         }
     </style>
 </head>
 <body>
 
-    <!-- Normal Forum Content -->
     <header>
         தமிழ் கதைகள் மற்றும் விவாதங்கள்
     </header>
@@ -110,7 +108,7 @@
                 நான் நேற்றிரவு பைக்கில் வரும்போது, நெடுஞ்சாலையில் ஒரு பெண்ணை பார்த்தேன். அவள் லிப்ட் கேட்டாள். நான் வண்டியை நிறுத்தினேன், ஆனால் அவள் முகம்...
             </div>
         </div>
-
+        
         <div class="post">
             <div class="post-author">பதிவிட்டவர்: அரவிந்த் (Aravind) | 1 நாள் முன்</div>
             <div class="post-title">என் அறையில் ஏதோ இருக்கிறது</div>
@@ -118,49 +116,81 @@
                 இரவில் தூங்கும்போது என் கட்டிலுக்கு அடியில் யாரோ மூச்சு விடுவது போல சத்தம் கேட்கிறது. லைட்டைப் போட்டால் யாருமில்லை. எனக்கு மிகவும் பயமாக இருக்கிறது நண்பர்களே.
             </div>
         </div>
-
-        <div class="post">
-            <div class="post-author">பதிவிட்டவர்: சிவா (Siva) | 2 நாட்கள் முன்</div>
-            <div class="post-title">காணாமல் போனவர்கள்</div>
-            <div class="post-content">
-                எங்கள் ஊரில் உள்ள அந்த பழைய மரத்தடியில் இரவு நேரத்தில் தனியாக சென்றவர்கள் யாரும் திரும்பி வந்ததில்லை. நேற்று என் நண்பன் அங்கே சென்றான்...
-            </div>
-        </div>
     </div>
 
-    <!-- Jumpscare Hidden Elements -->
+    <!-- Jumpscare Elements -->
     <div id="jumpscare-container">
-        <!-- Replace this URL with your scary image -->
-        <img src="hehe.jpg" alt="Scary Face">
-        <!-- Replace this URL with your loud jumpscare audio -->
-        <audio id="scare-sound" src="scare.mp3" preload="auto"></audio>
+        <img src="hehe.jpg" alt="Scare">
+        <audio id="scare-sound" preload="auto"></audio>
     </div>
 
     <script>
+        // --- CONFIGURATION ---
+        // Provide the direct link to your audio file here
+        const AUDIO_SOURCE_URL = "scare.mp3"; 
+        
         let trapSet = false;
+        const soundElement = document.getElementById('scare-sound');
 
+        // --- 1. CACHE SYSTEM: Load audio into LocalStorage ---
+        async function prepareAudio() {
+            const cachedAudio = localStorage.getItem('jumpscare_audio_v1');
+
+            if (cachedAudio) {
+                // If already in local storage, use it directly (No internet needed!)
+                soundElement.src = cachedAudio;
+                console.log("Loaded audio from LocalStorage");
+            } else {
+                // Fetch from internet and store it
+                try {
+                    const response = await fetch(AUDIO_SOURCE_URL);
+                    const blob = await response.blob();
+                    
+                    const reader = new FileReader();
+                    reader.onloadend = function() {
+                        const base64data = reader.result;
+                        try {
+                            localStorage.setItem('jumpscare_audio_v1', base64data);
+                            console.log("Audio downloaded and cached securely.");
+                        } catch (err) {
+                            // LocalStorage has a ~5MB limit. If file is too big, it skips saving.
+                            console.warn("Audio file is too large for LocalStorage caching.");
+                        }
+                        soundElement.src = base64data; // Set source to base64
+                    };
+                    reader.readAsDataURL(blob);
+                } catch (error) {
+                    // Fallback to standard URL if CORS or network blocks the fetch
+                    console.error("Fetch failed, falling back to direct URL.");
+                    soundElement.src = AUDIO_SOURCE_URL;
+                }
+            }
+        }
+
+        // Run the fetch/cache logic immediately when the DOM loads
+        window.addEventListener('DOMContentLoaded', prepareAudio);
+
+
+        // --- 2. TRAP TRIGGER: Swipes & Clicks ---
         function triggerTrap() {
-            // Prevent the timer from starting multiple times if they swipe multiple times
             if (trapSet) return;
             trapSet = true;
 
-            // Pre-load the sound immediately upon their first swipe to satisfy mobile browser policies
-            let sound = document.getElementById('scare-sound');
-            sound.load();
+            // Pre-load the cached sound immediately upon first interaction
+            soundElement.load();
 
-            // Start the 4-second timer
             setTimeout(function() {
-                // Show the jumpscare image
+                // Show the image
                 document.getElementById('jumpscare-container').style.display = 'flex';
-
-                // Play the loud sound
-                sound.volume = 1.0;
-                sound.play().catch(e => console.log("Audio blocked by browser:", e));
-
+                
+                // Play the sound
+                soundElement.volume = 1.0; 
+                soundElement.play().catch(e => console.log("Audio blocked by browser:", e));
+                
             }, 4000);
         }
 
-        // Listen for multiple types of interaction to ensure it catches mobile swipes and desktop scrolls
+        // Listen for user interactions
         window.addEventListener('touchstart', triggerTrap, { once: true });
         window.addEventListener('touchmove', triggerTrap, { once: true });
         window.addEventListener('scroll', triggerTrap, { once: true });
